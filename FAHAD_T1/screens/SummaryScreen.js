@@ -6,6 +6,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useTransactions } from "../context/TransactionsContext";
+import { useTheme } from "../context/ThemeContext";
 
 const categoryColors = {
   Utilities: "#ff9800",
@@ -19,6 +20,7 @@ const categoryColors = {
 
 export default function SummaryScreen() {
   const { transactions } = useTransactions();
+  const { theme } = useTheme();
 
   const stats = useMemo(() => {
     const totalIncome = transactions
@@ -28,7 +30,7 @@ export default function SummaryScreen() {
       .filter((t) => t.type === "Expense")
       .reduce((sum, t) => sum + t.amount, 0);
 
-    // spending by category (only expenses)
+    // spending by category
     const categoryMap = {};
     transactions
       .filter((t) => t.type === "Expense")
@@ -39,7 +41,6 @@ export default function SummaryScreen() {
         categoryMap[t.category] += t.amount;
       });
 
-    // sort by amount descending
     const categoryBreakdown = Object.entries(categoryMap)
       .map(([category, amount]) => ({ category, amount }))
       .sort((a, b) => b.amount - a.amount);
@@ -61,43 +62,43 @@ export default function SummaryScreen() {
   }, [transactions]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* overview cards */}
       <View style={styles.overviewRow}>
-        <View style={[styles.overviewCard, { borderLeftColor: "#2e7d32" }]}>
-          <Text style={styles.overviewLabel}>Total Income</Text>
-          <Text style={[styles.overviewAmount, { color: "#2e7d32" }]}>
+        <View style={[styles.overviewCard, { backgroundColor: theme.card, borderLeftColor: theme.positive }]}>
+          <Text style={[styles.overviewLabel, { color: theme.textMuted }]}>Total Income</Text>
+          <Text style={[styles.overviewAmount, { color: theme.positive }]}>
             ${stats.totalIncome.toFixed(2)}
           </Text>
-          <Text style={styles.overviewCount}>{stats.depositCount} deposits</Text>
+          <Text style={[styles.overviewCount, { color: theme.textMuted }]}>{stats.depositCount} deposits</Text>
         </View>
-        <View style={[styles.overviewCard, { borderLeftColor: "#c62828" }]}>
-          <Text style={styles.overviewLabel}>Total Expenses</Text>
-          <Text style={[styles.overviewAmount, { color: "#c62828" }]}>
+        <View style={[styles.overviewCard, { backgroundColor: theme.card, borderLeftColor: theme.negative }]}>
+          <Text style={[styles.overviewLabel, { color: theme.textMuted }]}>Total Expenses</Text>
+          <Text style={[styles.overviewAmount, { color: theme.negative }]}>
             ${stats.totalExpenses.toFixed(2)}
           </Text>
-          <Text style={styles.overviewCount}>{stats.expenseCount} expenses</Text>
+          <Text style={[styles.overviewCount, { color: theme.textMuted }]}>{stats.expenseCount} expenses</Text>
         </View>
       </View>
 
       {/* savings rate */}
-      <View style={styles.savingsCard}>
-        <Text style={styles.savingsLabel}>Savings Rate</Text>
-        <Text style={styles.savingsAmount}>
+      <View style={[styles.savingsCard, { backgroundColor: theme.card }]}>
+        <Text style={[styles.savingsLabel, { color: theme.textMuted }]}>Savings Rate</Text>
+        <Text style={[styles.savingsAmount, { color: theme.primary }]}>
           {stats.totalIncome > 0
             ? ((stats.balance / stats.totalIncome) * 100).toFixed(1)
             : "0.0"}%
         </Text>
-        <Text style={styles.savingsSubtext}>
+        <Text style={[styles.savingsSubtext, { color: theme.textMuted }]}>
           ${stats.balance.toFixed(2)} saved out of ${stats.totalIncome.toFixed(2)} income
         </Text>
       </View>
 
       {/* category breakdown */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>Spending by Category</Text>
+      <View style={[styles.sectionCard, { backgroundColor: theme.card }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Spending by Category</Text>
         {stats.categoryBreakdown.length === 0 ? (
-          <Text style={styles.emptyText}>No expenses yet</Text>
+          <Text style={[styles.emptyText, { color: theme.textMuted }]}>No expenses yet</Text>
         ) : (
           stats.categoryBreakdown.map((item) => (
             <View key={item.category} style={styles.categoryRow}>
@@ -109,11 +110,11 @@ export default function SummaryScreen() {
                       { backgroundColor: categoryColors[item.category] || "#999" },
                     ]}
                   />
-                  <Text style={styles.categoryName}>{item.category}</Text>
+                  <Text style={[styles.categoryName, { color: theme.text }]}>{item.category}</Text>
                 </View>
-                <Text style={styles.categoryAmount}>${item.amount.toFixed(2)}</Text>
+                <Text style={[styles.categoryAmount, { color: theme.text }]}>${item.amount.toFixed(2)}</Text>
               </View>
-              <View style={styles.barBackground}>
+              <View style={[styles.barBackground, { backgroundColor: theme.border }]}>
                 <View
                   style={[
                     styles.barFill,
@@ -124,7 +125,7 @@ export default function SummaryScreen() {
                   ]}
                 />
               </View>
-              <Text style={styles.categoryPercent}>
+              <Text style={[styles.categoryPercent, { color: theme.textMuted }]}>
                 {((item.amount / stats.totalExpenses) * 100).toFixed(1)}% of total
               </Text>
             </View>
@@ -133,23 +134,23 @@ export default function SummaryScreen() {
       </View>
 
       {/* quick stats */}
-      <View style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>Quick Stats</Text>
-        <View style={styles.statRow}>
-          <Text style={styles.statLabel}>Total Transactions</Text>
-          <Text style={styles.statValue}>{stats.transactionCount}</Text>
+      <View style={[styles.sectionCard, { backgroundColor: theme.card }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>Quick Stats</Text>
+        <View style={[styles.statRow, { borderBottomColor: theme.border }]}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Total Transactions</Text>
+          <Text style={[styles.statValue, { color: theme.text }]}>{stats.transactionCount}</Text>
         </View>
-        <View style={styles.statRow}>
-          <Text style={styles.statLabel}>Average Expense</Text>
-          <Text style={styles.statValue}>
+        <View style={[styles.statRow, { borderBottomColor: theme.border }]}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Average Expense</Text>
+          <Text style={[styles.statValue, { color: theme.text }]}>
             ${stats.expenseCount > 0
               ? (stats.totalExpenses / stats.expenseCount).toFixed(2)
               : "0.00"}
           </Text>
         </View>
-        <View style={styles.statRow}>
-          <Text style={styles.statLabel}>Largest Expense</Text>
-          <Text style={styles.statValue}>
+        <View style={[styles.statRow, { borderBottomColor: theme.border }]}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Largest Expense</Text>
+          <Text style={[styles.statValue, { color: theme.text }]}>
             ${transactions
               .filter((t) => t.type === "Expense")
               .reduce((max, t) => Math.max(max, t.amount), 0)
@@ -162,7 +163,7 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f5f5f5" },
+  container: { flex: 1, padding: 16 },
   overviewRow: {
     flexDirection: "row",
     gap: 10,
@@ -170,7 +171,6 @@ const styles = StyleSheet.create({
   },
   overviewCard: {
     flex: 1,
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 14,
     borderLeftWidth: 4,
@@ -180,11 +180,10 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  overviewLabel: { fontSize: 12, color: "#888" },
+  overviewLabel: { fontSize: 12 },
   overviewAmount: { fontSize: 20, fontWeight: "bold", marginVertical: 4 },
-  overviewCount: { fontSize: 11, color: "#aaa" },
+  overviewCount: { fontSize: 11 },
   savingsCard: {
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 16,
     alignItems: "center",
@@ -195,11 +194,10 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  savingsLabel: { fontSize: 13, color: "#888" },
-  savingsAmount: { fontSize: 36, fontWeight: "bold", color: "#1976d2", marginVertical: 4 },
-  savingsSubtext: { fontSize: 12, color: "#aaa" },
+  savingsLabel: { fontSize: 13 },
+  savingsAmount: { fontSize: 36, fontWeight: "bold", marginVertical: 4 },
+  savingsSubtext: { fontSize: 12 },
   sectionCard: {
-    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 16,
     marginBottom: 12,
@@ -214,7 +212,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 12,
   },
-  emptyText: { color: "#999", textAlign: "center", padding: 16 },
+  emptyText: { textAlign: "center", padding: 16 },
   categoryRow: { marginBottom: 14 },
   categoryHeader: {
     flexDirection: "row",
@@ -233,7 +231,6 @@ const styles = StyleSheet.create({
   categoryAmount: { fontSize: 14, fontWeight: "600" },
   barBackground: {
     height: 8,
-    backgroundColor: "#eee",
     borderRadius: 4,
     overflow: "hidden",
   },
@@ -243,7 +240,6 @@ const styles = StyleSheet.create({
   },
   categoryPercent: {
     fontSize: 11,
-    color: "#aaa",
     marginTop: 2,
   },
   statRow: {
@@ -251,8 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
   },
-  statLabel: { fontSize: 14, color: "#666" },
+  statLabel: { fontSize: 14 },
   statValue: { fontSize: 14, fontWeight: "600" },
 });

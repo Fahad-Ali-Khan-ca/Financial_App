@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useTransactions } from "../context/TransactionsContext";
+import { useTheme } from "../context/ThemeContext";
 
 const categories = [
   "Utilities",
@@ -23,6 +24,7 @@ const categories = [
 
 export default function NewTransactionScreen({ navigation }) {
   const { addTransaction } = useTransactions();
+  const { theme } = useTheme();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [location, setLocation] = useState("");
@@ -40,7 +42,6 @@ export default function NewTransactionScreen({ navigation }) {
       Alert.alert("Amount must be a valid positive number.");
       return;
     }
-    // basic date format check
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(date)) {
       Alert.alert("Please enter date in YYYY-MM-DD format.");
@@ -52,70 +53,101 @@ export default function NewTransactionScreen({ navigation }) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.label}>Name</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Name</Text>
       <TextInput
         value={name}
         onChangeText={setName}
         placeholder="e.g. Grocery run"
-        style={styles.input}
+        placeholderTextColor={theme.textMuted}
+        style={[styles.input, {
+          backgroundColor: theme.inputBg,
+          borderColor: theme.inputBorder,
+          color: theme.text,
+        }]}
       />
 
-      <Text style={styles.label}>Amount ($)</Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Amount ($)</Text>
       <TextInput
         value={amount}
         onChangeText={setAmount}
         placeholder="0.00"
+        placeholderTextColor={theme.textMuted}
         keyboardType="numeric"
-        style={styles.input}
+        style={[styles.input, {
+          backgroundColor: theme.inputBg,
+          borderColor: theme.inputBorder,
+          color: theme.text,
+        }]}
       />
 
-      <Text style={styles.label}>Location</Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Location</Text>
       <TextInput
         value={location}
         onChangeText={setLocation}
         placeholder="e.g. Walmart"
-        style={styles.input}
+        placeholderTextColor={theme.textMuted}
+        style={[styles.input, {
+          backgroundColor: theme.inputBg,
+          borderColor: theme.inputBorder,
+          color: theme.text,
+        }]}
       />
 
-      <Text style={styles.label}>Date</Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Date</Text>
       <TextInput
         value={date}
         onChangeText={setDate}
         placeholder="YYYY-MM-DD"
-        style={styles.input}
+        placeholderTextColor={theme.textMuted}
+        style={[styles.input, {
+          backgroundColor: theme.inputBg,
+          borderColor: theme.inputBorder,
+          color: theme.text,
+        }]}
       />
 
-      <Text style={styles.label}>Type</Text>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Type</Text>
       <View style={styles.typeRow}>
         <TouchableOpacity
-          style={[styles.typeBtn, type === "Expense" && styles.typeBtnActiveExpense]}
+          style={[styles.typeBtn, { backgroundColor: theme.filterBg },
+            type === "Expense" && { backgroundColor: theme.negative }]}
           onPress={() => setType("Expense")}
         >
-          <Text style={[styles.typeBtnText, type === "Expense" && styles.typeBtnTextActive]}>
+          <Text style={[styles.typeBtnText, { color: theme.textSecondary },
+            type === "Expense" && { color: "#fff" }]}>
             Expense
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.typeBtn, type === "Deposit" && styles.typeBtnActiveDeposit]}
+          style={[styles.typeBtn, { backgroundColor: theme.filterBg },
+            type === "Deposit" && { backgroundColor: theme.positive }]}
           onPress={() => setType("Deposit")}
         >
-          <Text style={[styles.typeBtnText, type === "Deposit" && styles.typeBtnTextActive]}>
+          <Text style={[styles.typeBtnText, { color: theme.textSecondary },
+            type === "Deposit" && { color: "#fff" }]}>
             Deposit
           </Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>Category</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker selectedValue={category} onValueChange={setCategory}>
+      <Text style={[styles.label, { color: theme.textSecondary }]}>Category</Text>
+      <View style={[styles.pickerWrapper, {
+        backgroundColor: theme.inputBg,
+        borderColor: theme.inputBorder,
+      }]}>
+        <Picker
+          selectedValue={category}
+          onValueChange={setCategory}
+          style={{ color: theme.text }}
+        >
           {categories.map((c) => (
             <Picker.Item key={c} label={c} value={c} />
           ))}
         </Picker>
       </View>
 
-      <TouchableOpacity style={styles.submitBtn} onPress={onSubmit}>
+      <TouchableOpacity style={[styles.submitBtn, { backgroundColor: theme.primary }]} onPress={onSubmit}>
         <Text style={styles.submitBtnText}>Add Transaction</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -123,21 +155,18 @@ export default function NewTransactionScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f5f5f5" },
+  container: { flex: 1, padding: 16 },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#444",
     marginBottom: 4,
     marginTop: 10,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
     padding: 10,
     marginBottom: 4,
     borderRadius: 8,
-    backgroundColor: "#fff",
     fontSize: 15,
   },
   typeRow: {
@@ -149,22 +178,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: "#e0e0e0",
     alignItems: "center",
   },
-  typeBtnActiveExpense: { backgroundColor: "#c62828" },
-  typeBtnActiveDeposit: { backgroundColor: "#2e7d32" },
-  typeBtnText: { fontSize: 14, fontWeight: "600", color: "#555" },
-  typeBtnTextActive: { color: "#fff" },
+  typeBtnText: { fontSize: 14, fontWeight: "600" },
   pickerWrapper: {
-    backgroundColor: "#fff",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ddd",
     marginBottom: 4,
   },
   submitBtn: {
-    backgroundColor: "#1976d2",
     borderRadius: 10,
     padding: 14,
     alignItems: "center",

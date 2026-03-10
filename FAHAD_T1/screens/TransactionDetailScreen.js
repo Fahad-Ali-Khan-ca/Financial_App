@@ -1,41 +1,47 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 export default function TransactionDetailScreen({ route, navigation }) {
   const { tx } = route.params;
+  const { theme } = useTheme();
   const isDeposit = tx.type === "Deposit";
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.name}>{tx.name}</Text>
-        <Text style={[styles.amount, isDeposit ? styles.deposit : styles.expense]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.card, { backgroundColor: theme.card }]}>
+        <Text style={[styles.name, { color: theme.text }]}>{tx.name}</Text>
+        <Text style={[styles.amount, { color: isDeposit ? theme.positive : theme.negative }]}>
           {isDeposit ? "+" : "-"}${tx.amount.toFixed(2)}
         </Text>
-        <View style={[styles.typeBadge, isDeposit ? styles.depositBadge : styles.expenseBadge]}>
-          <Text style={styles.typeText}>{tx.type}</Text>
+        <View style={[styles.typeBadge, {
+          backgroundColor: isDeposit ? (theme.dark ? "#1b5e20" : "#e8f5e9") : (theme.dark ? "#b71c1c" : "#ffebee")
+        }]}>
+          <Text style={[styles.typeText, { color: isDeposit ? theme.positive : theme.negative }]}>
+            {tx.type}
+          </Text>
         </View>
       </View>
 
-      <View style={styles.detailsCard}>
+      <View style={[styles.detailsCard, { backgroundColor: theme.card }]}>
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Category</Text>
-          <Text style={styles.value}>{tx.category}</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>Category</Text>
+          <Text style={[styles.value, { color: theme.text }]}>{tx.category}</Text>
         </View>
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: theme.border }]} />
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Location</Text>
-          <Text style={styles.value}>{tx.location}</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>Location</Text>
+          <Text style={[styles.value, { color: theme.text }]}>{tx.location}</Text>
         </View>
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: theme.border }]} />
         <View style={styles.detailRow}>
-          <Text style={styles.label}>Date</Text>
-          <Text style={styles.value}>{tx.date}</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>Date</Text>
+          <Text style={[styles.value, { color: theme.text }]}>{tx.date}</Text>
         </View>
       </View>
 
       <TouchableOpacity
-        style={styles.editBtn}
+        style={[styles.editBtn, { backgroundColor: theme.primary }]}
         onPress={() => navigation.navigate("Edit", { tx })}
       >
         <Text style={styles.editBtnText}>Edit Transaction</Text>
@@ -45,9 +51,8 @@ export default function TransactionDetailScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#f5f5f5" },
+  container: { flex: 1, padding: 16 },
   card: {
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
@@ -60,18 +65,13 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 20, fontWeight: "bold", marginBottom: 8 },
   amount: { fontSize: 32, fontWeight: "bold", marginBottom: 12 },
-  deposit: { color: "#2e7d32" },
-  expense: { color: "#c62828" },
   typeBadge: {
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderRadius: 12,
   },
-  depositBadge: { backgroundColor: "#e8f5e9" },
-  expenseBadge: { backgroundColor: "#ffebee" },
   typeText: { fontSize: 13, fontWeight: "600" },
   detailsCard: {
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     shadowColor: "#000",
@@ -86,11 +86,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 12,
   },
-  label: { fontSize: 15, color: "#666" },
+  label: { fontSize: 15 },
   value: { fontSize: 15, fontWeight: "500" },
-  divider: { height: 1, backgroundColor: "#eee" },
+  divider: { height: 1 },
   editBtn: {
-    backgroundColor: "#1976d2",
     borderRadius: 10,
     padding: 14,
     alignItems: "center",
