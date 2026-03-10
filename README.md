@@ -128,6 +128,3 @@ Transactions can be categorized as:
 | react-native-gesture-handler | ~2.24.0 | Gesture support |
 | react-native-reanimated | ~3.17.4 | Animations |
 
-## Course
-
-BTP610 - Seneca Polytechnic
