@@ -48,6 +48,33 @@ const initialTransactions = [
     type: "Expense",
     category: "Entertainment",
   },
+  {
+    id: "6",
+    name: "Freelance Project",
+    amount: 750,
+    location: "Upwork",
+    date: "2025-06-12",
+    type: "Deposit",
+    category: "Payroll",
+  },
+  {
+    id: "7",
+    name: "Shoppers Drug Mart",
+    amount: 35,
+    location: "Shoppers",
+    date: "2025-06-14",
+    type: "Expense",
+    category: "Health",
+  },
+  {
+    id: "8",
+    name: "Amazon Order",
+    amount: 89.99,
+    location: "Amazon.ca",
+    date: "2025-06-15",
+    type: "Expense",
+    category: "Shopping",
+  },
 ];
 
 export function TransactionsProvider({ children }) {
@@ -60,13 +87,19 @@ export function TransactionsProvider({ children }) {
     ]);
   };
 
+  const updateTransaction = (id, updatedFields) => {
+    setTransactions((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, ...updatedFields } : t))
+    );
+  };
+
   const deleteTransaction = (id) => {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
   return (
     <TransactionsContext.Provider
-      value={{ transactions, addTransaction, deleteTransaction }}
+      value={{ transactions, addTransaction, updateTransaction, deleteTransaction }}
     >
       {children}
     </TransactionsContext.Provider>

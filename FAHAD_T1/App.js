@@ -9,6 +9,7 @@ import LoginScreen from "./screens/LoginScreen";
 import TransactionListScreen from "./screens/TransactionListScreen";
 import TransactionDetailScreen from "./screens/TransactionDetailScreen";
 import NewTransactionScreen from "./screens/NewTransactionScreen";
+import EditTransactionScreen from "./screens/EditTransactionScreen";
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,11 @@ export default function App() {
               name="New"
               component={NewTransactionScreen}
               options={{ title: "Add Transaction" }}
+            />
+            <Stack.Screen
+              name="Edit"
+              component={EditTransactionScreen}
+              options={{ title: "Edit Transaction" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
