@@ -21,17 +21,20 @@ export default function TransactionListScreen({ navigation }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeFilter, setActiveFilter] = useState("All");
 
+    const parentNav = navigation.getParent();
+
     // header logout button
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => <Button title="Logout" onPress={() => {
                 signOut();
-                navigation.replace("Login");
+                if (parentNav) parentNav.replace("Login");
+                else navigation.replace("Login");
             }}
             />,
             headerLeft: () => null,
         });
-    }, [navigation]);
+    }, [navigation, parentNav]);
 
     // filter and search logic
     const filteredTransactions = useMemo(() => {
@@ -147,7 +150,7 @@ export default function TransactionListScreen({ navigation }) {
                                 { cancelable: true }
                             )
                         }
-                        onPress={() => navigation.navigate("Detail", { tx: item })}
+                        onPress={() => (parentNav || navigation).navigate("Detail", { tx: item })}
                     />
                 )}
                 ListEmptyComponent={
@@ -156,7 +159,7 @@ export default function TransactionListScreen({ navigation }) {
             />
             <TouchableOpacity
                 style={styles.fab}
-                onPress={() => navigation.navigate("New")}
+                onPress={() => (parentNav || navigation).navigate("New")}
             >
                 <Text style={styles.fabText}>+</Text>
             </TouchableOpacity>
